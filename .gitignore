@@ -1,0 +1,58 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+venv310/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# FastAPI / build artifacts
+*.log
+
+# Model artifacts (already versioned ones are in backend/models)
+backend/models/*.npy
+backend/models/*.pt
+backend/models/*.bin
+backend/models/*.safetensors
+
+# Node / frontend
+node_modules/
+lex-predictor/node_modules/
+lex-predictor/dist/
+lex-predictor/.vite/
+lex-predictor/.turbo/
+lex-predictor/.next/
+
+# Package managers
+bun.lockb
+pnpm-lock.yaml
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local data
+*.csv
+*.tsv
+*.xlsx
+*.bak
+*.tmp
+*.cache
+
+# Environment / secrets
+.env
+.env.*
+
