@@ -5,13 +5,14 @@ import numpy as np
 from io import BytesIO
 import PyPDF2
 import docx
+from huggingface_hub import hf_hub_download
 
 # Disable fbgemm (Windows compatibility)
 os.environ.setdefault('TORCH_USE_FBGEMM', '0')
 os.environ.setdefault('USE_FBGEMM', '0')
 
-# Base folder
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Hugging Face repository
+HF_REPO = "sreejs/legal-appeal-prediction-ensemble"
 
 # Lazy global models
 _tokenizer = None
@@ -20,6 +21,30 @@ _device = None
 _scaler = None
 _base_models = None
 _meta_model = None
+_results_dict = None
+_voting_model = None
+
+
+def load_model(filename):
+    """Load a model from Hugging Face Hub."""
+    path = hf_hub_download(
+        repo_id=HF_REPO,
+        filename=filename
+    )
+    return joblib.load(path)
+
+
+# Load artifacts ONCE at startup
+scaler = load_model("scaler.joblib")
+base_models = load_model("stack_base_models.joblib")
+meta_model = load_model("stack_meta_clf.joblib")
+results_dict = load_model("results_dict.joblib")
+
+# Optional
+try:
+    voting_model = load_model("voting_ensemble_hard.joblib")
+except Exception:
+    voting_model = None
 
 # Label mapping
 _label_map = {0: "appeal rejected", 1: "appeal approved"}
@@ -29,9 +54,9 @@ _label_map = {0: "appeal rejected", 1: "appeal approved"}
 # 1. Load LegalBERT, Scaler, Base Models, Meta Model
 # ===================================================================
 def _load_models():
-    """Lazy-load all models only when needed."""
+    """Lazy-load LegalBERT model only when needed."""
     global _tokenizer, _bert_model, _device
-    global _scaler, _base_models, _meta_model
+    global _scaler, _base_models, _meta_model, _results_dict, _voting_model
 
     if _tokenizer is not None:
         return
@@ -48,18 +73,12 @@ def _load_models():
         _bert_model.to(_device)
         _bert_model.eval()
 
-        # ---- Load scaler ----
-        _scaler = joblib.load(os.path.join(BASE_DIR, "models", "scaler.joblib"))
-
-        # ---- Load base models (list of tuples: (name, model)) ----
-        _base_models = joblib.load(
-            os.path.join(BASE_DIR, "models", "stack_base_models.joblib")
-        )
-
-        # ---- Load meta-classifier ----
-        _meta_model = joblib.load(
-            os.path.join(BASE_DIR, "models", "stack_meta_clf.joblib")
-        )
+        # ---- Use models loaded from Hugging Face Hub ----
+        _scaler = scaler
+        _base_models = base_models
+        _meta_model = meta_model
+        _results_dict = results_dict
+        _voting_model = voting_model
 
     except Exception as e:
         if "fbgemm" in str(e) or "WinError 126" in str(e):
