@@ -1,14 +1,14 @@
 # Legal Appeal Prediction System
 
 ## Overview
-The Legal Appeal Prediction System is a machine learning application that predicts whether a legal appeal is likely to be **approved or rejected** based on the textual content of legal case documents. The system uses **Legal-BERT embeddings** and an **ensemble learning approach** to provide accurate, data-driven predictions for Indian legal cases.
+The Legal Appeal Prediction System is a machine learning application that predicts whether a legal appeal is likely to be **approved or rejected** based on the textual content of legal case documents. The system uses **InLegal-BERT embeddings** and an **ensemble learning approach** to provide accurate, data-driven predictions for Indian legal cases.
 
 ---
 
 ## Features
 - Upload legal case documents (PDF, DOCX, TXT)
 - Automatic text extraction and preprocessing
-- Legal-domain embeddings using Legal-BERT
+- Legal-domain embeddings using InLegal-BERT
 - Ensemble of multiple ML classifiers
 - Meta-model stacking for final prediction
 - Trained models hosted on Hugging Face
@@ -20,7 +20,7 @@ The Legal Appeal Prediction System is a machine learning application that predic
    - Cleans and normalizes legal case text
 
 2. **Embedding Generation**
-   - Legal-BERT embeddings
+   - InLegal-BERT embeddings
    - Feature scaling using StandardScaler
 
 3. **Base Models**
